@@ -54,7 +54,43 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
         }
 
-        /* Premium Components */
+        /* Robust Layout Helpers (Fallbacks for Tailwind) */
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .ml-auto {
+            margin-left: auto;
+        }
+
+        .mr-3 {
+            margin-right: 12px;
+        }
+
+        .mb-8 {
+            margin-bottom: 32px;
+        }
+
         .sidebar {
             width: 280px;
             height: 100vh;
@@ -62,6 +98,8 @@
             left: 0;
             top: 0;
             z-index: 50;
+            background: rgba(255, 255, 255, 0.82);
+            border-right: 1px solid var(--apple-border);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -72,6 +110,140 @@
             display: flex;
             flex-direction: column;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            width: calc(100% - 32px);
+            padding: 12px 20px;
+            margin: 4px 16px;
+            border-radius: 14px;
+            transition: all 0.2s ease;
+            color: #86868b;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            background: transparent;
+            text-align: left;
+        }
+
+        .nav-item:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #1d1d1f;
+        }
+
+        .nav-item.active {
+            background: white;
+            color: var(--material-primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-item span {
+            font-size: 14px;
+        }
+
+        /* Model Grid Fallback */
+        #models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .premium-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            border: 1px solid var(--apple-border);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .premium-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Progress Bars */
+        .progress-bar-bg {
+            width: 100%;
+            background: #f2f2f7;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--material-primary);
+            border-radius: 3px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Sidebar Footer Overhaul */
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 24px;
+            background: rgba(0, 0, 0, 0.02);
+            border-top: 1px solid var(--apple-border);
+        }
+
+        .status-card {
+            background: white;
+            border: 1px solid var(--apple-border);
+            padding: 16px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .settings-btn {
+            width: 100%;
+            padding: 14px;
+            background: #1d1d1f;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .settings-btn:hover {
+            background: #000000;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .action-button {
+            padding: 12px;
+            background: white;
+            border: 1px solid var(--apple-border);
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .action-button:hover {
+            background: #f5f5f7;
+            border-color: #d2d2d7;
         }
 
         #chat-section:not(.hidden) {
@@ -281,28 +453,27 @@
                 </div>
             </div>
 
-            <div class="mt-auto p-6 space-y-4">
-                <div class="p-4 bg-white/50 rounded-2xl border border-white/20">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-semibold text-[#86868b]">API STATUS</span>
-                        <span class="w-2 h-2 rounded-full bg-red-400" id="api-status"></span>
+            <div class="sidebar-footer">
+                <div class="status-card">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-[10px] font-bold text-[#86868b] uppercase tracking-widest">API Engine</span>
+                        <div class="flex items-center">
+                            <span class="w-2 h-2 rounded-full bg-red-400 mr-2" id="api-status"></span>
+                            <span id="api-status-text" class="text-xs font-bold text-[#1d1d1f]">Connecting</span>
+                        </div>
                     </div>
-                    <p id="api-status-text" class="text-sm font-medium mb-3 truncate">Connecting...</p>
-                    <button onclick="openConfigModal()"
-                        class="w-full py-2.5 bg-white border border-[#e5e5e7] rounded-xl text-sm font-semibold hover:bg-gray-50 transition-colors shadow-sm">
-                        Settings
+                    <button onclick="openConfigModal()" class="settings-btn">
+                        <i data-lucide="settings" class="w-4 h-4"></i>
+                        <span>Studio Settings</span>
                     </button>
-                </div>
-
-                <div class="flex space-x-2">
-                    <button onclick="exportData()"
-                        class="flex-1 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors flex items-center justify-center">
-                        <i data-lucide="download" class="w-4 h-4 text-[#86868b]"></i>
-                    </button>
-                    <button onclick="importData()"
-                        class="flex-1 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors flex items-center justify-center">
-                        <i data-lucide="upload" class="w-4 h-4 text-[#86868b]"></i>
-                    </button>
+                    <div class="action-grid">
+                        <button onclick="exportData()" class="action-button" title="Export Data">
+                            <i data-lucide="download" class="w-4 h-4 text-[#86868b]"></i>
+                        </button>
+                        <button onclick="importData()" class="action-button" title="Import Data">
+                            <i data-lucide="upload" class="w-4 h-4 text-[#86868b]"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </aside>

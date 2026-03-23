@@ -85,7 +85,7 @@ let isGenerating = false;
 let currentGenerationController = null;
 
 // Data version for forcing updates
-const DATA_VERSION = "5.0";
+const DATA_VERSION = "5.1";
 const LAST_UPDATE_KEY = 'lastModelsUpdate';
 
 // Initialize on page load
@@ -115,7 +115,13 @@ function init() {
     // Start periodic limit resets
     startLimitResets();
 
-    lucide.createIcons();
+    // Ensure Lucide icons are initialized properly
+    if (window.lucide) {
+        lucide.createIcons();
+    } else {
+        // Fallback: try again after a short delay
+        setTimeout(() => window.lucide && lucide.createIcons(), 2000);
+    }
     console.log("Initialization complete.");
 }
 
@@ -462,7 +468,7 @@ function renderModels(modelsToRender = allModels) {
 
     modelsToRender.forEach(model => {
         const card = document.createElement('div');
-        card.className = 'premium-card elevation-1';
+        card.className = 'premium-card elevation-1 model-card';
 
         const rpmPercent = model.rpm.limit > 0 ? (model.rpm.used / model.rpm.limit) * 100 : 0;
         const tpmPercent = model.tpm.limit > 0 ? (model.tpm.used / model.tpm.limit) * 100 : 0;
@@ -473,14 +479,14 @@ function renderModels(modelsToRender = allModels) {
         const formatLimit = (val) => val >= 1000 ? (val / 1000).toFixed(1) + 'K' : val;
 
         card.innerHTML = `
-        <div class="flex items-start justify-between mb-6">
-            <div class="p-3 bg-gray-50 rounded-2xl">
+        <div class="card-header flex items-start justify-between mb-6">
+            <div class="icon-container p-3 bg-gray-50 rounded-2xl">
                 <i data-lucide="${model.category.includes('Multi-modal') ? 'layers' : 'type'}" class="w-6 h-6 text-blue-500"></i>
             </div>
             <span class="badge ${statusBadgeClass}">${model.status}</span>
         </div>
-        <h3 class="text-lg font-bold mb-1 truncate">${model.displayName || model.name}</h3>
-        <p class="text-[10px] uppercase font-bold text-[#86868b] tracking-widest mb-6">${model.category}</p>
+        <h3 class="model-name text-lg font-bold mb-1 truncate" title="${model.displayName || model.name}">${model.displayName || model.name}</h3>
+        <p class="model-category text-[10px] uppercase font-bold text-[#86868b] tracking-widest mb-6">${model.category}</p>
         
         <div class="space-y-4">
             <div>
