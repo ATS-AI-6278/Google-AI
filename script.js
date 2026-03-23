@@ -241,6 +241,33 @@ function setupEventListeners() {
     }
 }
 
+// Periodic limit resets
+function startLimitResets() {
+    // Reset RPM and TPM every 60 seconds
+    setInterval(() => {
+        allModels.forEach(model => {
+            model.rpm.used = 0;
+            model.tpm.used = 0;
+        });
+        renderModels();
+        saveToLocalStorage();
+        if (configManager.isDebug()) console.log('RPM/TPM counters reset.');
+    }, 60000);
+
+    // Reset RPD every 24 hours
+    setInterval(() => {
+        allModels.forEach(model => {
+            model.rpd.used = 0;
+            model.status = 'available';
+        });
+        renderModels();
+        saveToLocalStorage();
+        if (configManager.isDebug()) console.log('RPD counters reset.');
+    }, 86400000);
+
+    console.log('Limit reset timers started (RPM/TPM: 60s, RPD: 24h).');
+}
+
 // API Connection Status
 async function checkAPIConnection() {
     const statusDot = document.getElementById('api-status');
@@ -644,9 +671,44 @@ async function sendMessage() {
 
         chatHistory[messageIndex].isStreaming = false;
 
-        // Update model usage (estimate)
+        // Track usage: estimate tokens from the prompt + response
+        const promptTokens = estimateTokens(message);
+        const completionTokens = estimateTokens(fullResponse);
+        const totalTokens = promptTokens + completionTokens;
+
+        // Update model card RPM/TPM/RPD counters
+        updateModelUsage(selectedModel, {
+            promptTokenCount: promptTokens,
+            candidatesTokenCount: completionTokens
+        });
+
+        // Update RPD (requests per day)
+        const modelObj = allModels.find(m => m.name === selectedModel);
+        if (modelObj) {
+            modelObj.rpd.used += 1;
+        }
+
+        // Record in usage tracker for analytics charts
+        if (window.usageTracker) {
+            usageTracker.trackUsage(selectedModel, {
+                usageMetadata: {
+                    promptTokenCount: promptTokens,
+                    candidatesTokenCount: completionTokens,
+                    totalTokenCount: totalTokens
+                }
+            });
+        }
+
+        // Store token info on the message for display
+        chatHistory[messageIndex].usage = { totalTokenCount: totalTokens };
+
+        // Refresh all UI
         updateStats();
-        if (typeof initCharts === 'function') initCharts();
+        renderModels();
+        saveToLocalStorage();
+        if (typeof initCharts === 'function') {
+            try { initCharts(); } catch (e) { /* analytics tab may not be visible */ }
+        }
 
     } catch (error) {
         console.error('API Error:', error);

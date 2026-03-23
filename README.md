@@ -1,172 +1,106 @@
-# Google AI Studio Manager
+# 🚀 Nova AI Studio Manager v5.1
+### *The Ultimate Professional Dashboard for Google AI Ecosystem Management*
 
-A comprehensive web application for managing Google AI Studio models with local storage, analytics, and model selection capabilities.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build: Professional](https://img.shields.io/badge/Build-Professional-blue.svg)]()
+[![Ecosystem: Google AI](https://img.shields.io/badge/Ecosystem-Google%20AI-red.svg)]()
 
-## Features
-
-### 🤖 Model Management
-- **Complete Model Inventory**: All your Google AI Studio models in one place
-- **Real-time Usage Tracking**: Monitor RPM, TPM, and RPD limits
-- **Visual Usage Bars**: Instant visual feedback on rate limit consumption
-- **Status Indicators**: Available, Limited, or Unavailable status for each model
-- **Smart Filtering**: Filter by category, status, or search by name
-
-### 📊 Analytics Dashboard
-- **Usage Overview**: Doughnut chart showing model availability distribution
-- **Category Distribution**: Bar chart of models by category
-- **RPM/TPM Usage**: Top 10 models by usage percentage
-- **Detailed Statistics Table**: Complete usage data for all models
-- **Interactive Charts**: Powered by Chart.js for responsive visualizations
-
-### 💬 Chat Interface
-- **Model Selection**: Choose from available models for conversations
-- **Chat History**: Persistent conversation history stored locally
-- **Model-Specific Context**: Each conversation tied to selected model
-- **Clean Interface**: Modern, responsive chat design
-
-### 💾 Data Management
-- **Local Storage**: All data saved locally in browser
-- **Export Functionality**: Download data as JSON file
-- **Import Capability**: Restore data from backup files
-- **Persistent Settings**: Your preferences and data survive browser restarts
-
-## Model Categories Included
-
-### Text-out Models
-- Gemini 2.5 Flash, Gemini 3.1 Flash Lite, Gemini 2.5 Flash Lite
-- Gemini 2.5 Pro, Gemini 2 Flash, Gemini 2 Flash Exp
-- Gemini 2 Flash Lite, Gemini 3 Flash, Gemini 3.1 Pro
-
-### Multi-modal Generative Models
-- Gemini 2.5 Flash TTS, Gemini 2.5 Pro TTS
-- Imagen 4 Generate, Imagen 4 Ultra Generate, Imagen 4 Fast Generate
-- Nano Banana series, Veo 3 Generate, Veo 3 Fast Generate
-
-### Other Models
-- Gemma 3 series (1B, 2B, 4B, 12B, 27B)
-- Gemini Embedding 1 & 2
-- Gemini Robotics ER 1.5 Preview
-- Computer Use Preview
-
-### Agents
-- Deep Research Pro Preview
-
-### Live API
-- Gemini 2.5 Flash Native Audio Dialog
-
-### Tools
-- Map Grounding tools for various Gemini models
-- Search Grounding tools
-
-## Quick Start
-
-1. **Install Dependencies**
-   ```bash
-   npm install
-   ```
-
-2. **Start Development Server**
-   ```bash
-   npm run dev
-   ```
-
-3. **Open Browser**
-   Navigate to `http://localhost:3000`
-
-## Usage
-
-### Viewing Models
-- Main dashboard shows all models with usage bars
-- Color-coded status indicators (green/yellow/red)
-- Hover effects for better interactivity
-
-### Filtering Models
-- Use category dropdown to filter by model type
-- Status filter for availability
-- Search bar for quick model lookup
-
-### Analytics
-- Click "Analytics" tab to view usage statistics
-- Interactive charts update in real-time
-- Detailed table shows exact usage percentages
-
-### Chat Interface
-- Select "Chat Interface" tab
-- Choose model from dropdown
-- Type messages and send
-- Chat history saved automatically
-
-### Data Management
-- Export data using "Export Data" button
-- Import previously saved data
-- All changes auto-saved to local storage
-
-## Technology Stack
-
-- **Frontend**: HTML5, Tailwind CSS, Vanilla JavaScript
-- **Charts**: Chart.js for data visualization
-- **Icons**: Lucide Icons
-- **Storage**: Browser Local Storage
-- **Development**: Live Server for hot reloading
-
-## Rate Limit Tracking
-
-The application tracks three key metrics for each model:
-
-- **RPM (Requests Per Minute)**: Current usage vs. limit
-- **TPM (Tokens Per Minute)**: Token consumption tracking
-- **RPD (Requests Per Day)**: Daily usage monitoring
-
-Visual progress bars show percentage usage for each metric, making it easy to identify which models are approaching their limits.
-
-## Customization
-
-### Adding New Models
-Edit `script.js` and add new models to the `modelsData` or `toolsData` arrays:
-
-```javascript
-{
-    name: "Model Name",
-    category: "Category",
-    rpm: { used: 0, limit: 100 },
-    tpm: { used: 0, limit: 50000 },
-    rpd: { used: 0, limit: 1000 },
-    status: "available"
-}
-```
-
-### Custom Styling
-Modify Tailwind classes in `index.html` or add custom CSS in the `<style>` section.
-
-## Browser Compatibility
-
-- Chrome 60+
-- Firefox 55+
-- Safari 12+
-- Edge 79+
-
-## Security
-
-- All data stored locally (no server transmission)
-- No API keys or sensitive information stored
-- Import/export functionality for manual backup
-
-## Future Enhancements
-
-- Real-time API integration with Google AI Studio
-- Automated usage tracking via API
-- Usage predictions and alerts
-- Team collaboration features
-- Advanced analytics with trends
-
-## License
-
-MIT License - feel free to use, modify, and distribute.
-
-## Support
-
-For issues or feature requests, please check the project repository or create an issue.
+Nova AI Studio Manager is a state-of-the-art, high-performance workspace designed for developers and AI researchers who demand precision control over their Google AI deployments. Featuring a premium Apple-inspired "glassmorphism" UI, real-time telemetry, and a secure multi-modal chat engine, it is the most comprehensive tool for managing Gemini, Gemma, Imagen, and Veo models.
 
 ---
 
-**Note**: This is a management interface for Google AI Studio models. Actual API calls require proper authentication and API keys from Google AI Studio.
+## 🌟 Why Nova AI?
+
+Unlike standard AI interfaces, Nova provides a **real-time telemetry layer** that tracks your API quotas (RPM, TPM, RPD) with micro-second precision. It bridges the gap between raw API calls and a production-ready dashboard.
+
+### 💎 Key Features
+- **⚡ Real-Time Telemetry**: Instant visualization of Requests Per Minute (RPM) and Tokens Per Minute (TPM).
+- **🧠 45+ Canonical Models**: Exhaustive support for the latest Gemini 2.5, 3.1, Gemma 3, Veo 3, and Imagen 4 families.
+- **🛡️ Secure Token Management**: Choose between **Direct Browser API** or **Local Express Proxy** mode for maximum security.
+- **📊 Advanced Analytics**: Interactive Line, Doughnut, and Radar charts powered by Chart.js 4.4.
+- **💬 Pro Multi-Modal Chat**: Full Markdown rendering (Marked.js), syntax highlighting, and native audio/image support.
+- **🧹 Auto-Reset Engine**: Intelligent background daemons that flush rate limits automatically.
+
+---
+
+## 📦 Canonical Model Support
+Nova supports every major frontier model in the Google AI ecosystem:
+
+| Family          | Notable Models                    | Capabilities                               |
+| :-------------- | :-------------------------------- | :----------------------------------------- |
+| **Gemini Core** | 2.5 Flash, 2.5 Pro, 3.1 Pro       | Frontier reasoning, Speed, Coding          |
+| **Next-Gen**    | 2.0 Flash Exp, 3.1 Flash Lite     | Cutting-edge preview features              |
+| **Gemma 3**     | 1B, 4B, 12B, 27B (-it)            | Open-weights, efficient instruction tuning |
+| **Creative**    | Veo 3, Imagen 4 (Ultra/Fast)      | High-fidelity Video & Image generation     |
+| **Specialty**   | Nano Banana, Native Audio, ER 1.5 | On-device, Audio Dialog, Robotics          |
+| **Agents**      | Deep Research Pro, Computer Use   | Task automation & deep reasoning           |
+
+---
+
+## 🛠️ Architecture & Setup
+
+Nova uses a decoupled **Client-Proxy Architecture** for maximum reliability.
+
+### 1. Prerequisites
+- **Node.js**: v18.0 or higher
+- **Google AI API Key**: Obtainable from [Google AI Studio](https://aistudio.google.com/)
+
+### 2. Installation
+```bash
+# Clone the repository
+git clone https://github.com/your-username/google-ai-studio-manager.git
+
+# Enter directory
+cd google-ai-studio-manager
+
+# Install dependencies
+npm install
+```
+
+### 3. Configuration
+Nova supports two ways to authenticate:
+- **Direct UI Entry**: Paste your API key in the "Settings" modal inside the browser.
+- **Proxy Mode (Recommended)**: Create a `.env` file for server-side key safety.
+```env
+GOOGLE_API_KEY=your_secured_api_key_here
+PORT=3001
+DEBUG=true
+```
+
+### 4. Launching
+```bash
+# Start the concurrent development environment
+npm run dev
+```
+*Port 3000 (Frontend) and Port 3001 (Proxy Backend) will start simultaneously.*
+
+---
+
+## 🤝 Open for Support & Collaboration
+**We are looking for contributors!** Whether you are a UI/UX expert, a backend engineer, or an AI researcher, Nova is an open canvas for your contributions.
+
+### How to Help:
+1.  **UI/UX Pass**: Help us refine the glassmorphism aesthetic or mobile responsiveness.
+2.  **Model Mapping**: As Google releases new models, help update the `MODEL_LIMITS` and `MODEL_DISPLAY_NAMES` in `script.js`.
+3.  **New Analytics**: Suggest new telemetry metrics (latency tracking, cost estimation, etc.).
+4.  **Bug Hunting**: Report issues or submit PRs for any edge cases found.
+
+### Contribution Rules:
+- Keep the logic in **Vanilla JavaScript** to maintain zero-bundle overhead.
+- Use **Tailwind CSS** for UI consistency.
+- Maintain the **DATA_VERSIONing** logic when modifying storage structures.
+
+---
+
+## 💻 Technical Stack
+- **Frontend**: HTML5, Tailwind CSS, Lucide Icons
+- **Charts**: Chart.js v4.4.1
+- **Markdown**: Marked.js for fluid response rendering
+- **Backend**: Express.js (Node server-side proxy)
+- **Deployment**: Zero-config, runs locally via `live-server`
+
+## 📄 License
+Project released under the [MIT License](LICENSE).
+
+---
+*Created with ❤️ for the AI Developer Community. Google AI Studio is a trademark of Google LLC.*
