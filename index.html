@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google AI Studio Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        .model-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+        
+        .model-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+        
+        .usage-bar {
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 9999px;
+        }
+        
+        .tab-active {
+            border-bottom: 3px solid #3b82f6;
+            color: #3b82f6;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .status-badge {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: .8;
+            }
+        }
+        
+        .chat-message {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .loading-dots::after {
+            content: '.';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60% { content: '...'; }
+            80%, 100% { content: ''; }
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        
+        .api-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .api-status.connected {
+            background-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+        
+        .api-status.disconnected {
+            background-color: #ef4444;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="app" class="min-h-screen">
+        <!-- Header -->
+        <header class="glass-morphism shadow-lg border-b sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="gradient-bg p-2 rounded-xl">
+                            <i data-lucide="cpu" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold gradient-text">Google AI Studio Manager</h1>
+                            <p class="text-xs text-gray-500">Intelligent Model Management & Analytics</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2 text-sm">
+                            <span class="api-status" id="api-status"></span>
+                            <span id="api-status-text" class="text-gray-600">Checking...</span>
+                        </div>
+                        <button onclick="openConfigModal()" class="px-4 py-2 text-sm bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg flex items-center space-x-2 transition-all">
+                            <i data-lucide="settings" class="w-4 h-4"></i>
+                            <span>Config</span>
+                        </button>
+                        <button onclick="exportData()" class="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center space-x-2 transition-colors">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>Export</span>
+                        </button>
+                        <button onclick="importData()" class="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center space-x-2 transition-colors">
+                            <i data-lucide="upload" class="w-4 h-4"></i>
+                            <span>Import</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="glass-morphism border-b sticky top-16 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <nav class="flex space-x-8">
+                    <button onclick="switchTab('models')" id="models-tab" class="py-4 px-1 border-b-3 font-medium text-sm tab-active transition-all">
+                        <div class="flex items-center space-x-2">
+                            <i data-lucide="grid-3x3" class="w-4 h-4"></i>
+                            <span>Models</span>
+                            <span class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs" id="models-count">0</span>
+                        </div>
+                    </button>
+                    <button onclick="switchTab('analytics')" id="analytics-tab" class="py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 transition-all">
+                        <div class="flex items-center space-x-2">
+                            <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                            <span>Analytics</span>
+                        </div>
+                    </button>
+                    <button onclick="switchTab('chat')" id="chat-tab" class="py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 transition-all">
+                        <div class="flex items-center space-x-2">
+                            <i data-lucide="message-square" class="w-4 h-4"></i>
+                            <span>Chat</span>
+                        </div>
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Models Section -->
+        <div id="models-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Stats Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="glass-morphism rounded-xl p-6 border">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Total Models</p>
+                            <p class="text-2xl font-bold text-gray-900" id="total-models">0</p>
+                        </div>
+                        <div class="bg-blue-100 p-3 rounded-lg">
+                            <i data-lucide="cpu" class="w-6 h-6 text-blue-600"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-morphism rounded-xl p-6 border">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Available</p>
+                            <p class="text-2xl font-bold text-green-600" id="available-models">0</p>
+                        </div>
+                        <div class="bg-green-100 p-3 rounded-lg">
+                            <i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-morphism rounded-xl p-6 border">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Limited</p>
+                            <p class="text-2xl font-bold text-yellow-600" id="limited-models">0</p>
+                        </div>
+                        <div class="bg-yellow-100 p-3 rounded-lg">
+                            <i data-lucide="alert-triangle" class="w-6 h-6 text-yellow-600"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-morphism rounded-xl p-6 border">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Unavailable</p>
+                            <p class="text-2xl font-bold text-red-600" id="unavailable-models">0</p>
+                        </div>
+                        <div class="bg-red-100 p-3 rounded-lg">
+                            <i data-lucide="x-circle" class="w-6 h-6 text-red-600"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters and Search -->
+            <div class="glass-morphism rounded-xl shadow-md p-6 mb-6 border">
+                <div class="flex flex-wrap gap-4 items-center justify-between">
+                    <div class="flex flex-wrap gap-4">
+                        <select id="category-filter" onchange="filterModels()" class="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">All Categories</option>
+                            <option value="Text-out models">Text-out models</option>
+                            <option value="Multi-modal generative models">Multi-modal generative models</option>
+                            <option value="Other models">Other models</option>
+                            <option value="Agents">Agents</option>
+                            <option value="Live API">Live API</option>
+                            <option value="Tools">Tools</option>
+                        </select>
+                        <select id="status-filter" onchange="filterModels()" class="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">All Status</option>
+                            <option value="available">Available</option>
+                            <option value="limited">Limited</option>
+                            <option value="unavailable">Unavailable</option>
+                        </select>
+                        <button onclick="refreshModels()" class="px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg flex items-center space-x-2 transition-colors">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                            <span>Refresh</span>
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <input type="text" id="search-input" placeholder="Search models..." onkeyup="filterModels()" class="pl-10 pr-4 py-2 border border-gray-200 rounded-lg w-64 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <i data-lucide="search" class="w-5 h-5 absolute left-3 top-2.5 text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Models Grid -->
+            <div id="models-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Models will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div id="analytics-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Usage Overview -->
+                <div class="glass-morphism rounded-xl shadow-md p-6 border">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center space-x-2">
+                        <i data-lucide="pie-chart" class="w-5 h-5 text-blue-600"></i>
+                        <span>Usage Overview</span>
+                    </h3>
+                    <div class="chart-container">
+                        <canvas id="usageChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Category Distribution -->
+                <div class="glass-morphism rounded-xl shadow-md p-6 border">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center space-x-2">
+                        <i data-lucide="bar-chart" class="w-5 h-5 text-green-600"></i>
+                        <span>Model Categories</span>
+                    </h3>
+                    <div class="chart-container">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- RPM Usage -->
+                <div class="glass-morphism rounded-xl shadow-md p-6 border">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center space-x-2">
+                        <i data-lucide="trending-up" class="w-5 h-5 text-purple-600"></i>
+                        <span>RPM Usage by Model</span>
+                    </h3>
+                    <div class="chart-container">
+                        <canvas id="rpmChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- TPM Usage -->
+                <div class="glass-morphism rounded-xl shadow-md p-6 border">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center space-x-2">
+                        <i data-lucide="activity" class="w-5 h-5 text-orange-600"></i>
+                        <span>TPM Usage by Model</span>
+                    </h3>
+                    <div class="chart-container">
+                        <canvas id="tpmChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Table -->
+            <div class="glass-morphism rounded-xl shadow-md mt-6 border">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center space-x-2">
+                        <i data-lucide="table" class="w-5 h-5 text-indigo-600"></i>
+                        <span>Detailed Statistics</span>
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Model</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RPM Usage</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TPM Usage</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RPD Usage</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stats-table" class="bg-white divide-y divide-gray-200">
+                                <!-- Stats will be dynamically inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Interface Section -->
+        <div id="chat-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Chat Sidebar -->
+                <div class="lg:col-span-1">
+                    <div class="glass-morphism rounded-xl shadow-md border">
+                        <div class="p-4 border-b">
+                            <h3 class="font-semibold text-gray-900">Model Selection</h3>
+                        </div>
+                        <div class="p-4">
+                            <select id="chat-model-select" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4">
+                                <!-- Models will be dynamically inserted here -->
+                            </select>
+                            <div class="space-y-2">
+                                <div class="text-sm text-gray-500">Model Settings</div>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="text-xs text-gray-600">Temperature</label>
+                                        <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7" class="w-full">
+                                        <span id="temp-value" class="text-xs text-gray-500">0.7</span>
+                                    </div>
+                                    <div>
+                                        <label class="text-xs text-gray-600">Max Tokens</label>
+                                        <input type="number" id="max-tokens" value="1024" min="1" max="8192" class="w-full px-2 py-1 text-sm border border-gray-200 rounded">
+                                    </div>
+                                </div>
+                            </div>
+                            <button onclick="clearChat()" class="w-full mt-4 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm transition-colors">
+                                Clear Chat
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chat Main Area -->
+                <div class="lg:col-span-3">
+                    <div class="glass-morphism rounded-xl shadow-md border h-[600px] flex flex-col">
+                        <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-4">
+                            <!-- Chat messages will appear here -->
+                        </div>
+                        <div class="p-6 border-t">
+                            <div class="flex space-x-4">
+                                <textarea id="chat-input" placeholder="Type your message here..." class="flex-1 px-4 py-3 border border-gray-200 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" rows="3"></textarea>
+                                <div class="flex flex-col space-y-2">
+                                    <button onclick="sendMessage()" id="send-btn" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg transition-all flex items-center justify-center">
+                                        <i data-lucide="send" class="w-4 h-4"></i>
+                                    </button>
+                                    <button onclick="stopGeneration()" id="stop-btn" class="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all hidden flex items-center justify-center">
+                                        <i data-lucide="square" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configuration Modal -->
+    <div id="config-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="glass-morphism rounded-xl shadow-xl max-w-md w-full mx-4 border">
+            <div class="p-6 border-b">
+                <h3 class="text-lg font-semibold">API Configuration</h3>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Google AI API Key</label>
+                    <input type="password" id="api-key-input" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter your API key">
+                    <button onclick="toggleApiKeyVisibility()" class="mt-2 text-xs text-blue-600 hover:text-blue-700">Show/Hide Key</button>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API URL</label>
+                    <input type="text" id="api-url-input" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" value="https://generativelanguage.googleapis.com/v1beta">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Timeout (ms)</label>
+                    <input type="number" id="timeout-input" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" value="30000">
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="debug-mode" class="mr-2">
+                    <label for="debug-mode" class="text-sm text-gray-700">Debug Mode</label>
+                </div>
+            </div>
+            <div class="p-6 border-t flex justify-end space-x-3">
+                <button onclick="closeConfigModal()" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">Cancel</button>
+                <button onclick="saveConfig()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input for data import -->
+    <input type="file" id="import-file" accept=".json" style="display: none;" onchange="handleImport(event)">
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

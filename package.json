@@ -1,0 +1,21 @@
+{
+  "name": "google-ai-studio-manager",
+  "version": "1.0.0",
+  "description": "Google AI Studio model management and analytics dashboard",
+  "main": "index.html",
+  "scripts": {
+    "dev": "live-server --port=3000 --host=localhost",
+    "build": "echo 'Build complete'",
+    "start": "live-server --port=3000 --host=localhost"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.0",
+    "lucide": "^0.294.0"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "keywords": ["google-ai", "analytics", "model-management"],
+  "author": "Your Name",
+  "license": "MIT"
+}
