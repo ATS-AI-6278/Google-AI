@@ -1,31 +1,34 @@
 {
   "name": "google-ai-studio-manager",
   "version": "1.0.0",
-  "description": "Google AI Studio model management and analytics dashboard",
-  "main": "index.html",
+  "private": true,
   "scripts": {
-    "dev": "npx concurrently \"npm run start:backend\" \"live-server --port=3000 --host=localhost --ignore=node_modules\"",
-    "start:backend": "node server.js",
-    "build": "echo 'Build complete'",
-    "start": "npm run dev"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "chart.js": "^4.4.0",
-    "lucide": "^0.294.0"
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.18.2",
+    "lucide-react": "^0.468.0",
+    "marked": "^15.0.0",
+    "next": "15.1.0",
+    "react": "19.0.0",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "19.0.0",
+    "tailwind-merge": "^2.6.1"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1",
-    "cors": "^2.8.6",
-    "dotenv": "^17.3.1",
-    "express": "^5.2.1",
-    "live-server": "^1.2.2",
-    "node-fetch": "^2.7.0"
-  },
-  "keywords": [
-    "google-ai",
-    "analytics",
-    "model-management"
-  ],
-  "author": "Your Name",
-  "license": "MIT"
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.0",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
 }

@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0a0a0b;
+  --foreground: #ffffff;
+  --forge-accent: #6366f1;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-white/10 rounded-full hover:bg-white/20;
+  }
+
+  .premium-card {
+    @apply relative overflow-hidden bg-white/5 border border-white/10 rounded-forge-2xl transition-all duration-500 hover:border-white/20;
+  }
+
+  .markdown-content h1, .markdown-content h2, .markdown-content h3 {
+    @apply font-bold text-white mt-4 mb-2;
+  }
+  
+  .markdown-content p {
+    @apply mb-3 text-zinc-300;
+  }
+
+  .markdown-content code {
+    @apply bg-white/10 px-1.5 py-0.5 rounded text-indigo-300 font-mono text-xs;
+  }
+
+  .markdown-content pre {
+    @apply bg-black/60 p-4 rounded-xl border border-white/10 my-4 overflow-x-auto;
+  }
+
+  .markdown-content pre code {
+    @apply bg-transparent p-0 text-zinc-300;
+  }
+}
+
+@keyframes border-beam {
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+.animate-border-beam {
+  animation: border-beam var(--duration) linear infinite;
+}
